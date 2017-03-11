@@ -47,9 +47,12 @@ $(function() {
     });
 
     $("#clearButton").click(function() {
-        chrome.storage.sync.set({
-            arr: []
-        });
-        $("#addButton").prop("disabled", false);
+        var res = confirm("すべて削除してよろしいですか？");
+        if (res) {
+            chrome.storage.sync.set({
+                arr: []
+            });
+            $("#addButton").prop("disabled", false);
+        }
     });
 });
