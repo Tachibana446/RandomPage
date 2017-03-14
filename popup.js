@@ -1,20 +1,22 @@
 $(function() {
     chrome.storage.sync.get("arr", function(value) {
         if (Object.keys(value).length === 0) {
-            value = [];
+            value = {};
         } else {
             value = value.arr;
         }
         console.log(value);
         chrome.tabs.getSelected(function(tab) {
-            if (value.indexOf(tab.url) == -1) {
+            if (!HasSite(value, tab.url)) {
                 $("#removeButton").prop("disabled", true);
             } else {
                 $("#addButton").prop("disabled", true);
             }
-
+            // 追加
+            var domain = GetDomainName(tab.url);
             $("#addButton").click(function() {
-                value.push({
+                if (value[domain] == null) value[domain] = [];
+                value[domain].push({
                     title: tab.title,
                     url: tab.url
                 });
@@ -24,10 +26,12 @@ $(function() {
                 $("#addButton").prop("disabled", true);
                 $("#removeButton").prop("disabled", false);
             });
+            // 削除
             $("#removeButton").click(function() {
-                value = value.filter(function(v) {
+                var removedArray = value[domain].filter(function(v) {
                     return v.url != tab.url;
                 });
+                value[domain] = removedArray;
                 chrome.storage.sync.set({
                     arr: value
                 });
@@ -36,7 +40,7 @@ $(function() {
             });
         });
     });
-
+    // ランダム
     $("#randomButton").click(function() {
         chrome.storage.sync.get("arr", function(value) {
             if (Object.keys(value).length !== 0) {
@@ -48,12 +52,12 @@ $(function() {
             }
         });
     });
-
+    // すべてクリア
     $("#clearButton").click(function() {
         var res = confirm("すべて削除してよろしいですか？");
         if (res) {
             chrome.storage.sync.set({
-                arr: []
+                arr: {}
             });
             $("#addButton").prop("disabled", false);
         }
