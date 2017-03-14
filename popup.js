@@ -14,7 +14,10 @@ $(function() {
             }
 
             $("#addButton").click(function() {
-                value.push(tab.url);
+                value.push({
+                    title: tab.title,
+                    url: tab.url
+                });
                 chrome.storage.sync.set({
                     arr: value
                 });
@@ -23,7 +26,7 @@ $(function() {
             });
             $("#removeButton").click(function() {
                 value = value.filter(function(v) {
-                    return v != tab.url;
+                    return v.url != tab.url;
                 });
                 chrome.storage.sync.set({
                     arr: value
@@ -39,9 +42,9 @@ $(function() {
             if (Object.keys(value).length !== 0) {
                 var index = Math.floor(Math.random() * (value.arr.length + 1));
                 $("#link").attr({
-                    href: value.arr[index]
+                    href: value.arr[index].url
                 });
-                $("#link").text(value.arr[index]);
+                $("#link").text(value.arr[index].title);
             }
         });
     });
