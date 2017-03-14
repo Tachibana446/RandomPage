@@ -6,7 +6,8 @@ $(function() {
         }
         var ul = $("ul");
         for (data of list) {
-            var div = $('<div class="item">');
+            var parent = $('<div class="item">');
+            var div = $('<div class="ui segment">');
             var item = $("<li>");
             var link = $("<a>");
             var url = typeof(data) == "string" ? data : data.url;
@@ -20,7 +21,9 @@ $(function() {
                 data: data
             }, removeUrl);
             div.append(removeButton);
-            ul.append(div);
+
+            parent.append(div);
+            ul.append(parent);
         }
     });
 });
