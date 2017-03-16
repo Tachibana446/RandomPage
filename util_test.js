@@ -69,10 +69,22 @@ function Test_RemoveUrl() {
     });
 }
 
+function Test_GetDomains() {
+    var div = $('<div class="ui list">');
+    GetDomains(function(domains) {
+        for (domain of domains) {
+            var item = $(`<div class="item">${domain}</div>`);
+            div.append(item);
+        }
+        $('#domains').append(div);
+    });
+}
+
 $(function() {
     Test_GetDomainName();
     Test_HasSite();
     Test_RemoveUrl();
+    Test_GetDomains();
 
     chrome.storage.sync.get("arr", function(value) {
         console.table(value);

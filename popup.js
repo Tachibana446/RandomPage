@@ -35,14 +35,25 @@ $(function() {
         });
     });
     // ランダム
+    var i = 0;
+    GetDomains(function(domains) {
+        var select = $('select#select_domain');
+        for (domain of domains) {
+            var opt = $(`<option value="${i}">${domain}</option>`);
+            select.append(opt);
+            i++;
+        }
+    });
     $("#randomButton").click(function() {
-        chrome.storage.sync.get("arr", function(value) {
-            if (Object.keys(value).length !== 0) {
-                var index = Math.floor(Math.random() * (value.arr.length + 1));
-                $("#link").attr({
-                    href: value.arr[index].url
+        GetDomains(function(domains) {
+            var index = $('select#select_domain').val();
+            if (index >= 0 && index < domains.length) {
+                GetRandom(domains[index], function(data) {
+                    $('#link').attr({
+                        href: data.url
+                    });
+                    $('#link').text(data.title);
                 });
-                $("#link").text(value.arr[index].title);
             }
         });
     });

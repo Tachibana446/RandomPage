@@ -43,3 +43,28 @@ function RemoveUrl(url, keyName, callback) {
         chrome.storage.sync.set(obj, callback);
     });
 }
+
+// 登録済みの記事のドメイン一覧
+// callbackに配列domainsが渡される
+function GetDomains(callback) {
+    chrome.storage.sync.get("arr", function(value) {
+        var domains = [];
+        for (domain of Object.keys(value.arr)) {
+            if (value.arr[domain].length > 0) domains.push(domain);
+        }
+        callback(domains);
+    });
+}
+
+// 指定したドメインのサイトからランダムに1ページ
+function GetRandom(domain, callback) {
+    chrome.storage.sync.get("arr", function(value) {
+        if (value.arr[domain]) {
+            var index = Math.floor(Math.random() * (value.arr[domain].length + 1));
+            var data = value.arr[domain][index];
+            callback(data);
+        } else {
+            callback("");
+        }
+    });
+}
