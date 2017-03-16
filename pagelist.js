@@ -1,44 +1,49 @@
 $(function() {
     chrome.storage.sync.get("arr", function(value) {
-        var list = [];
-        if (value.arr) {
-            list = value.arr;
-        }
-        var ul = $("ul");
-        for (data of list) {
-            var div = $('<div class="item">');
-            var item = $("<li>");
-            var link = $("<a>");
-            var url = typeof(data) == "string" ? data : data.url;
-            link.attr("href", url);
-            var title = typeof(data) == "string" ? data : data.title;
-            link.text(title);
-            item.append(link);
-            div.append(item);
-            var removeButton = $('<button class="ui button">削除</button>');
-            removeButton.bind("click", {
-                data: data
-            }, removeUrl);
-            div.append(removeButton);
-            ul.append(div);
+        var obj = {};
+        if (value.arr) obj = value.arr;
+        var mainDiv = $("#segments");
+        //ドメインごと
+        for (domain of Object.keys(obj)) {
+            var list = [];
+            if (obj[domain]) list = obj[domain];
+            if (list == [] || list.length == 0) continue;
+            var segments = $('<div class="ui segments">');
+            var header = $(`<h2 class="ui attached header">${domain} (${list.length}個)</h2>`);
+            segments.append(header);
+            var toggleDiv = $('<div>'); // トグルで表示非表示するためのdiv
+            header.bind("click", {
+                div: toggleDiv
+            }, Toggle);
+            segments.append(toggleDiv);
+
+            // ドメインごとのURLとタイトルのオブジェクト
+            for (urlAndTitle of list) {
+                var div = $('<div class="ui attached segment">');
+                var link = $(`<a href="${urlAndTitle.url}">${urlAndTitle.title}</a>`);
+                div.append(link);
+                // 削除ボタン
+                var removeButton = $('<button class="ui button">削除</button>');
+                removeButton.bind("click", {
+                    data: urlAndTitle
+                }, removeUrl);
+                div.append(removeButton);
+
+                toggleDiv.append(div);
+            }
+            mainDiv.append(segments);
         }
     });
 });
 
 function removeUrl(event) {
     var data = event.data.data;
-    chrome.storage.sync.get("arr", function(value) {
-        var list = [];
-        if (value.arr) list = value.arr;
-        var removedList = list.filter(function(v) {
-            if (typeof(data) == "string")
-                return v != data;
-            else
-                return v.url != data.url;
-        });
-        chrome.storage.sync.set({
-            arr: removedList
-        });
+    RemoveUrl(data.url, "arr", function() {
+        location.reload();
     });
-    location.reload();
+}
+
+function Toggle(event) {
+    var div = event.data.div;
+    div.toggle(200);
 }
