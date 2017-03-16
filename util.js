@@ -32,16 +32,14 @@ function RemoveUrl(url, keyName, callback) {
     keyName = keyName || "arr";
     var domain = GetDomainName(url);
     chrome.storage.sync.get(keyName, function(value) {
-        debugger;
-
         var list = [];
         if (value[keyName][domain]) list = value[keyName][domain];
         list = list.filter(function(v) {
             return v.url != url;
         });
         value[keyName][domain] = list;
-        chrome.storage.sync.set({
-            keyName: value[keyName]
-        }, callback);
+        var obj = {};
+        obj[keyName] = value[keyName];
+        chrome.storage.sync.set(obj, callback);
     });
 }

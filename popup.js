@@ -28,13 +28,7 @@ $(function() {
             });
             // 削除
             $("#removeButton").click(function() {
-                var removedArray = value[domain].filter(function(v) {
-                    return v.url != tab.url;
-                });
-                value[domain] = removedArray;
-                chrome.storage.sync.set({
-                    arr: value
-                });
+                RemoveUrl(tab.url, "arr", null);
                 $("#addButton").prop("disabled", false);
                 $("#removeButton").prop("disabled", true);
             });

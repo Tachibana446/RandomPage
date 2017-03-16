@@ -7,13 +7,14 @@ $(function() {
         for (domain of Object.keys(obj)) {
             var list = [];
             if (obj[domain]) list = obj[domain];
+            if (list == [] || list.length == 0) continue;
             var segments = $('<div class="ui segments">');
             var header = $(`<h2 class="ui attached header">${domain} (${list.length}個)</h2>`);
             segments.append(header);
             var toggleDiv = $('<div>'); // トグルで表示非表示するためのdiv
-            header.click(function() {
-                toggleDiv.toggle(200);
-            });
+            header.bind("click", {
+                div: toggleDiv
+            }, Toggle);
             segments.append(toggleDiv);
 
             // ドメインごとのURLとタイトルのオブジェクト
@@ -37,17 +38,12 @@ $(function() {
 
 function removeUrl(event) {
     var data = event.data.data;
-    var domain = GetDomainName(data.url);
-    chrome.storage.sync.get("arr", function(value) {
-        var list = [];
-        if (value.arr[domain]) list = value.arr[domain];
-        list = list.filter(function(v) {
-            return v.url != data.url;
-        });
-        value.arr[domain] = list;
-        chrome.storage.sync.set({
-            arr: value
-        });
+    RemoveUrl(data.url, "arr", function() {
+        location.reload();
     });
-    location.reload();
+}
+
+function Toggle(event) {
+    var div = event.data.div;
+    div.toggle(200);
 }

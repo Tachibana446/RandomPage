@@ -62,7 +62,6 @@ function Test_RemoveUrl() {
         debug: data
     }, function() {
         RemoveUrl(url, "debug", function() {
-            debugger;
             chrome.storage.sync.get("debug", function(value) {
                 console.table(value);
             });
